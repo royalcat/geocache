@@ -1,6 +1,6 @@
 container:
   image: golang:latest
-  cpu: 4
+  cpu: 8
   memory: 32G
 
 task:
