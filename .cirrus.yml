@@ -1,19 +1,22 @@
 container:
   image: golang:latest
-  ram: 32Gb
 
 task:
   install_wget_script: apt-get update && apt-get install wget
+
   matrix:
     - name: "russia"
       env:
         MAP: "russia"
+
     - name: "europe"
       env:
-        MAP: "north-america"
-    - name: "russia"
+        MAP: "europe"
+
+    - name: "north-america"
       env:
         MAP: "north-america"
+
     - name: "south-america"
       env:
         MAP: "south-america"
