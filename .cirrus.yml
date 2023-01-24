@@ -1,0 +1,21 @@
+container:
+  image: golang:latest
+  ram: 32Gb
+
+task:
+  create_env:
+    env:
+      MAP:
+        matrix:
+          - "russia"
+          - "europe"
+          - "north-america"
+          - "south-america"
+
+  map_cache:
+    folder: map
+    fingerprint_script: echo $MAP
+    reupload_on_changes: "true"
+    populate_script: |
+      mkdir map && cd map
+      wget -N "https://download.geofabrik.de/${MAP}-latest.osm.pbf"
