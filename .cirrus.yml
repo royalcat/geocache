@@ -5,6 +5,8 @@ container:
 
 task:
   install_wget_script: apt-get update && apt-get install wget
+  env:
+    CGO_ENABLED: "0"
 
   matrix:
     - name: "russia"
@@ -32,7 +34,7 @@ task:
       wget -N "https://download.geofabrik.de/${MAP}-latest.osm.pbf"
 
   generate_script: |
-    go run ./cmd/main.go generate -i ./map/$MAP -p ./$MAP -c ./cache
+    CGO_ENABLED=0 go run ./cmd/main.go generate -i ./map/$MAP -p ./$MAP -c ./cache
 
   upload_artifacts:
     path: $MAP.gob.zstd
