@@ -21,6 +21,7 @@ generate_points_task:
     image: golang:latest
     cpu: 8
     memory: 32G
+  skip: "!changesInclude('.cirrus.yml', 'geoparser/**', 'geomodel/**', 'kv/**', 'cmd/**')"
 
   install_deps_script: apt-get update && apt-get install wget
 
@@ -39,9 +40,9 @@ generate_points_task:
       done
 
   generate_script: |
-    export $MAPS_FILES = ""
+    $MAPS_FILES=""
     for map in $MAPS; do
-      $MAPS_FILES =  "%{MAPS},maps/${map}-latest.osm.pbf"
+      $MAPS_FILES="%{MAPS},maps/${map}-latest.osm.pbf"
     done
     go run ./cmd/main.go generate -i $MAPS_FILES -p ./${CIRRUS_TASK_NAME}_points
 
