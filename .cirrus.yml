@@ -21,7 +21,8 @@ generate_points_task:
     image: golang:latest
     cpu: 8
     memory: 32G
-  install_deps_script: apt-get update && apt-get install wget zlib
+
+  install_deps_script: apt-get update && apt-get install wget
 
   matrix:
     - name: "post-cis"
