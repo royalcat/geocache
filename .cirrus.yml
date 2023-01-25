@@ -34,7 +34,7 @@ task:
       wget -N "https://download.geofabrik.de/${MAP}-latest.osm.pbf"
 
   generate_script: |
-    CGO_ENABLED=0 go run ./cmd/main.go generate -i ./map/${MAP}-latest.osm.pbf -p ./$MAP
+    CGO_ENABLED=0 go run ./cmd/main.go generate -i ./map/${MAP}-latest.osm.pbf -p ./$MAP -c /tmp/geocache
 
   upload_artifacts:
     path: $MAP.gob.zstd
