@@ -48,7 +48,7 @@ generate_points_task:
     for map in $MAPS; do
       MAPS_FILES="${MAPS_FILES},maps/${map}-latest.osm.pbf"
     done
-    go run ./cmd/main.go generate -i $MAPS_FILES -p ./${CIRRUS_TASK_NAME}_points
+    go run ./cmd/main.go generate -p ${CIRRUS_TASK_NAME}_points -i $MAPS_FILES
 
   upload_artifacts:
     path: ${CIRRUS_TASK_NAME}_points.gob.zstd
