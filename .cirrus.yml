@@ -1,7 +1,7 @@
 container:
   image: golang:latest
-  cpu: 8
-  memory: 32G
+  cpu: 16
+  memory: 64G
 
 task:
   install_wget_script: apt-get update && apt-get install wget
@@ -34,7 +34,7 @@ task:
       wget -N "https://download.geofabrik.de/${MAP}-latest.osm.pbf"
 
   generate_script: |
-    CGO_ENABLED=0 go run ./cmd/main.go generate -i ./map/$MAP -p ./$MAP -c ./cache
+    CGO_ENABLED=0 go run ./cmd/main.go generate -i ./map/${MAP}-latest.osm.pbf -p ./$MAP
 
   upload_artifacts:
     path: $MAP.gob.zstd

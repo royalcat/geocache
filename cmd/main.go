@@ -109,13 +109,16 @@ func generate(ctx *cli.Context) error {
 
 	inputs := ctx.StringSlice("input")
 	for _, v := range inputs {
-		geoGen.ParseOSMFile(v)
+		err := geoGen.ParseOSMFile(v)
+		if err != nil {
+			return fmt.Errorf("error parsing input: %s with error: %s", v, err)
+		}
 		geoGen.OpenCache() // flushing memory cache
 	}
 
 	fmt.Println("generatating complete, saving...")
-	geoGen.SavePointsToFile(ctx.Path("points"))
-	return nil
+	err = geoGen.SavePointsToFile(ctx.Path("points"))
+	return fmt.Errorf("failed to save points to file: %s", err.Error())
 }
 
 func serve(ctx *cli.Context) error {
