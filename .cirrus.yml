@@ -1,7 +1,7 @@
 container:
   image: golang:latest
   cpu: 8
-  memory: 64G
+  memory: 32G
 
 task:
   install_wget_script: apt-get update && apt-get install wget
