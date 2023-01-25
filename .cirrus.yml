@@ -22,8 +22,8 @@ generate_points_task:
     cpu: 8
     memory: 32G
   skip: "!changesInclude('.cirrus.yml', 'geoparser/**', 'geomodel/**', 'kv/**', 'cmd/**')"
-
-  install_deps_script: apt-get update && apt-get install wget
+  env:
+    CGO_ENABLED: "0"
 
   matrix:
     - name: "post-cis"
@@ -32,6 +32,9 @@ generate_points_task:
 
   map_cache:
     folder: maps
+    fingerprint_scripts:
+      - echo $MAPS
+      - date +'%m/%d/%Y'
     populate_script: |
       mkdir maps && cd maps
       export IFS=","
