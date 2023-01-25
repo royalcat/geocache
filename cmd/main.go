@@ -71,8 +71,9 @@ func main() {
 						DefaultText: "memory",
 					},
 					&cli.StringSliceFlag{
-						Name:    "input",
-						Aliases: []string{"i"},
+						Name:      "input",
+						Aliases:   []string{"i"},
+						TakesFile: true,
 					},
 					&cli.IntFlag{
 						Name:        "threads",

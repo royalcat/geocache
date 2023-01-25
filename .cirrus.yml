@@ -1,40 +1,48 @@
-container:
-  image: golang:latest
-  cpu: 8
-  memory: 32G
+build_task:
+  container:
+    image: golang:latest
 
-task:
-  install_wget_script: apt-get update && apt-get install wget
   env:
     CGO_ENABLED: "0"
 
+  modules_cache:
+    fingerprint_script: cat go.sum
+    folder: $GOPATH/pkg/mod
+
+  get_script: go get ./...
+
+  build_script: go build -o geocache-$OS ./cmd/main.go
+
+  binaries_artifacts:
+    path: geocache-$OS
+
+generate_points_task:
+  container:
+    image: golang:latest
+    cpu: 8
+    memory: 32G
+  install_deps_script: apt-get update && apt-get install wget zlib
+
   matrix:
-    - name: "russia"
+    - name: "post-cis"
       env:
-        MAP: "russia"
-
-    - name: "europe"
-      env:
-        MAP: "europe"
-
-    - name: "north-america"
-      env:
-        MAP: "north-america"
-
-    - name: "south-america"
-      env:
-        MAP: "south-america"
+        MAPS: "ukraine,russia,belarus,finland,georgia,afghanistan,armenia,azerbaijan,kazakhstan,uzbekistan,mongolia"
 
   map_cache:
-    folder: map
-    fingerprint_script: echo $MAP
-    reupload_on_changes: "true"
+    folder: maps
     populate_script: |
-      mkdir map && cd map
-      wget -N "https://download.geofabrik.de/${MAP}-latest.osm.pbf"
+      mkdir maps && cd maps
+      export IFS=","
+      for map in $MAPS; do
+        wget -N "https://download.geofabrik.de/${map}-latest.osm.pbf"
+      done
 
   generate_script: |
-    CGO_ENABLED=0 go run ./cmd/main.go generate -i ./map/${MAP}-latest.osm.pbf -p ./$MAP -c /tmp/geocache
+    export $MAPS_FILES = ""
+    for map in $MAPS; do
+      $MAPS_FILES =  "%{MAPS},maps/${map}-latest.osm.pbf"
+    done
+    go run ./cmd/main.go generate -i $MAPS_FILES -p ./${CIRRUS_TASK_NAME}_points
 
   upload_artifacts:
-    path: $MAP.gob.zstd
+    path: ${CIRRUS_TASK_NAME}_points.gob.zstd
