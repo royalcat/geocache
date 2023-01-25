@@ -40,9 +40,10 @@ generate_points_task:
       done
 
   generate_script: |
-    $MAPS_FILES=""
+    MAPS_FILES=""
+    export IFS=","
     for map in $MAPS; do
-      $MAPS_FILES="%{MAPS},maps/${map}-latest.osm.pbf"
+      MAPS_FILES="${MAPS_FILES},maps/${map}-latest.osm.pbf"
     done
     go run ./cmd/main.go generate -i $MAPS_FILES -p ./${CIRRUS_TASK_NAME}_points
 
