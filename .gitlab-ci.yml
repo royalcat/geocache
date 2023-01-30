@@ -2,10 +2,11 @@ image: golang:latest
 
 stages:
   - build
-  - assets
 
 compile:
   stage: build
+  variables:
+    CGO_ENABLED: 0
   script:
     - mkdir -p binaries
     - go build -o binaries ./...
@@ -20,7 +21,7 @@ build_geo:
   variables:
     MAPS: $MAPS
 
-  stage: assets
+  stage: build
   script: |
     MAPS_FILES=""
     export IFS=","
