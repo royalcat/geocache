@@ -6,10 +6,10 @@ stages:
 compile:
   stage: build
   variables:
-    CGO_ENABLED: 0
+    CGO_ENABLED: "0"
   script:
     - mkdir -p binaries
-    - go build -o binaries ./...
+    - go build -o binaries ./cmd/main.go
   artifacts:
     paths:
       - binaries
@@ -19,18 +19,20 @@ build_geo:
     matrix:
       - MAPS: "europe/ukraine,russia,europe/belarus,europe/finland,europe/georgia,asia/afghanistan,asia/armenia,asia/azerbaijan,asia/kazakhstan,asia/uzbekistan,asia/mongolia"
   variables:
-    MAPS: $MAPS
-    CGO_ENABLED: 0
+    MAPS: "$MAPS"
+    CGO_ENABLED: "0"
 
   stage: build
   script:
     - |
       echo "Downloading: ${MAPS}"
-      mkdir maps && cd maps
-      export IFS=","
-      for map in $MAPS; do
-        curl "https://download.geofabrik.de/${map}-latest.osm.pbf" --create-dirs -o ${map}-latest.osm.pbf
-      done
+      mkdir maps
+      pushd maps
+        export IFS=","
+        for map in $MAPS; do
+          curl "https://download.geofabrik.de/${map}-latest.osm.pbf" --create-dirs -o ${map}-latest.osm.pbf
+        done
+      popd
     - |
       MAPS_FILES=""
       export IFS=","
