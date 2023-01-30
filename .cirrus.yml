@@ -39,7 +39,7 @@ generate_points_task:
       mkdir maps && cd maps
       export IFS=","
       for map in $MAPS; do
-        wget -N "https://download.geofabrik.de/${map}-latest.osm.pbf" -O $MAPS-latest.osm.pbf
+        curl "https://download.geofabrik.de/${map}-latest.osm.pbf" --create-dirs -o ${map}-latest.osm.pbf
       done
 
   generate_script: |
