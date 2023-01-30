@@ -1,0 +1,31 @@
+image: golang:latest
+
+stages:
+  - build
+  - assets
+
+compile:
+  stage: build
+  script:
+    - mkdir -p binaries
+    - go build -o binaries ./...
+  artifacts:
+    paths:
+      - binaries
+
+build_geo:
+  parallel:
+    matrix:
+      - MAPS: "europe/ukraine,russia,europe/belarus,europe/finland,europe/georgia,asia/afghanistan,asia/armenia,asia/azerbaijan,asia/kazakhstan,asia/uzbekistan,asia/mongolia"
+  variables:
+    MAPS: $MAPS
+
+  stage: assets
+  script: |
+    MAPS_FILES=""
+    export IFS=","
+    for map in $MAPS; do
+      MAPS_FILES="${MAPS_FILES},maps/${map}-latest.osm.pbf"
+    done
+    MAPS_FILES="${MAPS_FILES:1}" 
+    go run ./cmd/main.go generate -p ${CIRRUS_TASK_NAME}_points -i $MAPS_FILES
