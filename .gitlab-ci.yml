@@ -23,11 +23,19 @@ build_geo:
     CGO_ENABLED: 0
 
   stage: build
-  script: |
-    MAPS_FILES=""
-    export IFS=","
-    for map in $MAPS; do
-      MAPS_FILES="${MAPS_FILES},maps/${map}-latest.osm.pbf"
-    done
-    MAPS_FILES="${MAPS_FILES:1}" 
-    go run ./cmd/main.go generate -p ${CIRRUS_TASK_NAME}_points -i $MAPS_FILES
+  script:
+    - |
+      echo "Downloading: ${MAPS}"
+      mkdir maps && cd maps
+      export IFS=","
+      for map in $MAPS; do
+        curl "https://download.geofabrik.de/${map}-latest.osm.pbf" --create-dirs -o ${map}-latest.osm.pbf
+      done
+    - |
+      MAPS_FILES=""
+      export IFS=","
+      for map in $MAPS; do
+        MAPS_FILES="${MAPS_FILES},maps/${map}-latest.osm.pbf"
+      done
+      MAPS_FILES="${MAPS_FILES:1}" 
+      go run ./cmd/main.go generate -p ${CIRRUS_TASK_NAME}_points -i $MAPS_FILES
