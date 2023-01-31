@@ -15,23 +15,36 @@ compile:
       - binaries
 
 build_geo:
+  stage: build
   parallel:
     matrix:
       - NAME: post-cis
         MAPS: "europe/ukraine,russia,europe/belarus,europe/finland,europe/georgia,asia/afghanistan,asia/armenia,asia/azerbaijan,asia/kazakhstan,asia/uzbekistan,asia/mongolia"
   variables:
+    NAME: $NAME
     MAPS: "$MAPS"
     CGO_ENABLED: "0"
 
-  stage: build
+  cache:
+    paths:
+      - maps
+
   script:
+    - echo $NAME
     - |
       echo "Downloading: ${MAPS}"
       mkdir maps
       pushd maps
         export IFS=","
         for map in $MAPS; do
-          curl "https://download.geofabrik.de/${map}-latest.osm.pbf" --create-dirs -o ${map}-latest.osm.pbf
+          file=${map}-latest.osm.pbf
+
+          if test -e "$file"
+            then zflag="-z '$file'"
+            else zflag=
+          fi
+
+          curl "https://download.geofabrik.de/${file}" --create-dirs -o $file $zflag
         done
       popd
     - |
@@ -42,6 +55,7 @@ build_geo:
       done
       MAPS_FILES="${MAPS_FILES:1}" 
       go run ./cmd/main.go generate -p ${NAME}_points -i $MAPS_FILES
+
   artifacts:
     paths:
       - ${NAME}_points.*
