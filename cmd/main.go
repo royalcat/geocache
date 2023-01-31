@@ -119,7 +119,10 @@ func generate(ctx *cli.Context) error {
 
 	fmt.Println("generatating complete, saving...")
 	err = geoGen.SavePointsToFile(ctx.Path("points"))
-	return fmt.Errorf("failed to save points to file: %s", err.Error())
+	if err != nil {
+		return fmt.Errorf("failed to save points to file: %s", err.Error())
+	}
+	return nil
 }
 
 func serve(ctx *cli.Context) error {
