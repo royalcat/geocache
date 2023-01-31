@@ -17,7 +17,8 @@ compile:
 build_geo:
   parallel:
     matrix:
-      - MAPS: "europe/ukraine,russia,europe/belarus,europe/finland,europe/georgia,asia/afghanistan,asia/armenia,asia/azerbaijan,asia/kazakhstan,asia/uzbekistan,asia/mongolia"
+      - NAME: post-cis
+        MAPS: "europe/ukraine,russia,europe/belarus,europe/finland,europe/georgia,asia/afghanistan,asia/armenia,asia/azerbaijan,asia/kazakhstan,asia/uzbekistan,asia/mongolia"
   variables:
     MAPS: "$MAPS"
     CGO_ENABLED: "0"
@@ -40,4 +41,7 @@ build_geo:
         MAPS_FILES="${MAPS_FILES},maps/${map}-latest.osm.pbf"
       done
       MAPS_FILES="${MAPS_FILES:1}" 
-      go run ./cmd/main.go generate -p ${CIRRUS_TASK_NAME}_points -i $MAPS_FILES
+      go run ./cmd/main.go generate -p ${NAME}_points -i $MAPS_FILES
+  artifacts:
+    paths:
+      - ${NAME}_points.*
